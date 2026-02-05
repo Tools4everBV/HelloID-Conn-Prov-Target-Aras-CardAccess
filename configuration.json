@@ -1,0 +1,63 @@
+[
+    {
+        "key": "BaseUrl",
+        "type": "input",
+        "defaultValue": "http://localhost:8081",
+        "templateOptions": {
+            "label": "BaseUrl",
+            "description": "The URL to the API.",
+            "required": true
+        }
+    },
+    {
+        "key": "UserName",
+        "type": "input",
+        "defaultValue": "",
+        "templateOptions": {
+            "label": "UserName",
+            "description": "The UserName to connect to the API",
+            "required": true
+        }
+    },
+    {
+        "key": "Password",
+        "type": "input",
+        "defaultValue": "",
+        "templateOptions": {
+            "type": "password",
+            "label": "Password",
+            "description": "The password to connect to the API",
+            "required": true
+        }
+    },
+    {
+        "key": "PartitionId",
+        "type": "input",
+        "defaultValue": "",
+        "templateOptions": {
+            "label": "partition ID",
+            "description": "The partition ID required to retrieve all accounts. Refer to the README for instructions on how to obtain it",
+            "required": true
+        }
+    },
+    {
+        "key": "Facility",
+        "type": "input",
+        "defaultValue": "0",
+        "templateOptions": {
+            "label": "facility number",
+            "description": "The facility number on which the badge's exist",
+            "required": true
+        }
+    },
+    {
+        "key": "NoAccessPermissionId",
+        "type": "input",
+        "defaultValue": "0",
+        "templateOptions": {
+            "label": "NoAccess Permission Id",
+            "description": "The Permission Id (valueMember) of the 'no access' permission",
+            "required": true
+        }
+    }
+]
