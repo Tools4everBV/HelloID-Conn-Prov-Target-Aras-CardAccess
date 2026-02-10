@@ -85,7 +85,7 @@ The following settings are required to connect to the API.
 
 | Setting              | Description                                                   | Mandatory |
 | -------------------- | ------------------------------------------------------------- | --------- |
-| UserName             | The UserName to connect to the API                            | Yes       |
+| Username             | The Username to connect to the API                            | Yes       |
 | Password             | The Password to connect to the API                            | Yes       |
 | BaseUrl              | The URL to the API                                            | Yes       |
 | PartitionId          | The PartitionId used to retrieve all badgeHolders             | Yes       |
