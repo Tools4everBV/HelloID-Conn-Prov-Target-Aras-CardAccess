@@ -9,7 +9,7 @@
 > During testing, the API and/or the local machine on which CardAccess was installed were very slow. This does not necessarily apply to a production environment, but it is possible.
 
 <p align="center">
-  <img src="">
+  <img src="https://raw.githubusercontent.com/Tools4everBV/HelloID-Conn-Prov-Target-Aras-CardAccess/refs/heads/main/Logo.png">
 </p>
 
 ## Table of contents
