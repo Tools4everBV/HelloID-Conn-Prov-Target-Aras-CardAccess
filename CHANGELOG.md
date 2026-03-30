@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file. The format 
 	- `lastName` now uses complex name-convention logic.
 	- `facility` mapping now uses `Person.PrimaryContract.Employer.Name`.
 - Updated permission API request configuration to consistently use `Headers`.
+- Updated README remarks to document date behavior (`ActvDate`/`ExprDate`) and mandatory `Enabled` state preservation for `UpdateBadge` (update, permission grant, revoke).
 
 ### Fixed
 
