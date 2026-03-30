@@ -75,7 +75,7 @@ try {
     }
 
     $splatGetBadges = @{
-        Uri     = "$($actionContext.Configuration.BaseUrl)/Badges/AllBadgeHolders?partitionId=$($actionContext.Configuration.PartitionId)"
+        Uri     = "$($actionContext.Configuration.BaseUrl)/Badges/AllBadgeHolders?partitionId=$($actionContext.Configuration.PartitionId)&Facility=$($actionContext.Configuration.Facility)"
         Method  = 'Get'
         Headers = $headers
     }
@@ -85,11 +85,11 @@ try {
     $splatImportPermissionParams = @{
         Uri    = "$($actionContext.Configuration.BaseUrl)/Access/AccessGroups"
         Method = 'GET'
-        Header = $headers
+        Headers = $headers
     }
     $importedPermissions = Invoke-RestMethod @splatImportPermissionParams
 
-    foreach ($importedPermission in ($importedPermissions | Where-Object { $_.ValueMember -ne $actionContext.References.Permission.Reference })) {
+    foreach ($importedPermission in ($importedPermissions | Where-Object { $_.ValueMember -ne $actionContext.Configuration.NoAccessPermissionId })) {
         # Get all account references where one of the AG# properties contains permission reference.
         $badgeReferences = [System.Collections.Generic.List[int]]::new()
         foreach ($account in $importedAccounts) {

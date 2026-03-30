@@ -28,8 +28,8 @@
             "Create",
             "Update"
           ],
-          "MappingMode": "Field",
-          "Value": "\"Person.Name.FamilyName\"",
+          "MappingMode": "Complex",
+          "Value": "\"// Please enter the mapping logic to generate the lastName based on name convention.\\r\\nfunction generatelastName() {\\r\\n    let middleName = Person.Name.FamilyNamePrefix;\\r\\n    let lastName = Person.Name.FamilyName;\\r\\n    let middleNamePartner = Person.Name.FamilyNamePartnerPrefix;\\r\\n    let lastNamePartner = Person.Name.FamilyNamePartner;\\r\\n    let convention = Person.Name.Convention;\\r\\n\\r\\n    // B\\t    van den Boele\\r\\n    // BP\\t    van den Boele - de Vries\\r\\n    // P\\t    de Vries\\r\\n    // PB\\t    de Vries - van den Boele\\r\\n\\r\\n    let nameFormatted = '';\\r\\n    switch (convention) {\\r\\n        case \\\"B\\\":\\r\\n            if (typeof middleName !== 'undefined' && middleName) { nameFormatted = nameFormatted + ' ' + middleName }\\r\\n            nameFormatted = nameFormatted + ' ' + lastName;\\r\\n            break;\\r\\n        case \\\"BP\\\":\\r\\n            if (typeof middleName !== 'undefined' && middleName) { nameFormatted = nameFormatted + ' ' + middleName }\\r\\n            nameFormatted = nameFormatted + ' ' + lastName;\\r\\n\\r\\n            nameFormatted = nameFormatted + ' - ';\\r\\n\\r\\n            if (typeof middleNamePartner !== 'undefined' && middleNamePartner) { nameFormatted = nameFormatted + middleNamePartner + ' ' }\\r\\n            nameFormatted = nameFormatted + lastNamePartner;\\r\\n            break;\\r\\n        case \\\"P\\\":\\r\\n            if (typeof middleNamePartner !== 'undefined' && middleNamePartner) { nameFormatted = nameFormatted + ' ' + middleNamePartner }\\r\\n            nameFormatted = nameFormatted + ' ' + lastNamePartner;\\r\\n            break;\\r\\n        case \\\"PB\\\":\\r\\n            if (typeof middleNamePartner !== 'undefined' && middleNamePartner) { nameFormatted = nameFormatted + ' ' + middleNamePartner }\\r\\n            nameFormatted = nameFormatted + ' ' + lastNamePartner;\\r\\n\\r\\n            nameFormatted = nameFormatted + ' - ';\\r\\n\\r\\n            if (typeof middleName !== 'undefined' && middleName) { nameFormatted = nameFormatted + middleName + ' ' }\\r\\n            nameFormatted = nameFormatted + lastName;\\r\\n            break;\\r\\n        default:\\r\\n            if (typeof middleName !== 'undefined' && middleName) { nameFormatted = nameFormatted + ' ' + middleName }\\r\\n            nameFormatted = nameFormatted + ' ' + lastName;\\r\\n            break;\\r\\n    }\\r\\n    const lastNameFormatted = nameFormatted.trim();\\r\\n\\r\\n    return lastNameFormatted;\\r\\n}\\r\\n\\r\\ngeneratelastName();\"",
           "UsedInNotifications": false,
           "StoreInAccountData": false
         }
@@ -79,7 +79,7 @@
             "Update"
           ],
           "MappingMode": "Field",
-          "Value": "\"Person.PrimaryContract.Organization.Code\"",
+          "Value": "\"Person.PrimaryContract.Employer.Name\"",
           "UsedInNotifications": false,
           "StoreInAccountData": false
         }

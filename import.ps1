@@ -75,7 +75,7 @@ try {
     }
 
     $splatGetBadges = @{
-        Uri     = "$($actionContext.Configuration.BaseUrl)/Badges/AllBadgeHolders?partitionId=$($actionContext.Configuration.PartitionId)"
+        Uri     = "$($actionContext.Configuration.BaseUrl)/Badges/AllBadgeHolders?partitionId=$($actionContext.Configuration.PartitionId)&Facility=$($actionContext.Configuration.Facility)"
         Method  = 'Get'
         Headers = $headers
     }

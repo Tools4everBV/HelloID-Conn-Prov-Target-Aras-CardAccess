@@ -100,29 +100,35 @@ try {
                 $correlatedAccount.PSObject.Properties | Where-Object { $_.Name.StartsWith('AG') -and $_.Value -ne $actionContext.Configuration.NoAccessPermissionId } | ForEach-Object { [int]$_.Value }
             )
             # Add the permission to the AGNos array to update the account with the new permission.
-            $agnos.Add($actionContext.References.Permission.Reference) | Out-Null
+            if ($agnos -NotContains $actionContext.References.Permission.Reference) {
+                $agnos.Add($actionContext.References.Permission.Reference) | Out-Null
 
-            $body = @{
-                Badge = $actionContext.References.Account
-                AGNos = $agnos
-            }
+                $body = @{
+                    Badge = $actionContext.References.Account
+                    Enabled = [int]$correlatedAccount.Enabled
+                    AGNos = $agnos
+                }
 
-            $splatGrantParams = @{
-                Uri     = "$($actionContext.Configuration.BaseUrl)/Badges/UpdateBadge"
-                Method  = 'POST'
-                Headers = $headers
-                Body    = ([System.Text.Encoding]::UTF8.GetBytes(($body | ConvertTo-Json)))
-            }
+                $splatGrantParams = @{
+                    Uri     = "$($actionContext.Configuration.BaseUrl)/Badges/UpdateBadge"
+                    Method  = 'POST'
+                    Headers = $headers
+                    Body    = ([System.Text.Encoding]::UTF8.GetBytes(($body | ConvertTo-Json)))
+                }
 
-            if (-not($actionContext.DryRun -eq $true)) {
-                Write-Information "Granting Aras-CardAccess permission: [$($actionContext.PermissionDisplayName)] - [$($actionContext.References.Permission.Reference)]"
+                if (-not($actionContext.DryRun -eq $true)) {
+                    Write-Information "Granting Aras-CardAccess permission: [$($actionContext.PermissionDisplayName)] - [$($actionContext.References.Permission.Reference)]"
 
-                $grantedPermission = Invoke-RestMethod @splatGrantParams
-                if ($grantedPermission.Result -ne 0) {
-                    throw $grantedPermission.message
+                    $grantedPermission = Invoke-RestMethod @splatGrantParams
+                    if ($grantedPermission.Result -ne 0) {
+                        throw $grantedPermission.message
+                    }
+                } else {
+                    Write-Information "[DryRun] Grant Aras-CardAccess permission: [$($actionContext.References.Permission.Reference)], will be executed during enforcement"
                 }
             } else {
-                Write-Information "[DryRun] Grant Aras-CardAccess permission: [$($actionContext.References.Permission.Reference)], will be executed during enforcement"
+                # Group membership is already assigned
+                 Write-Information "Granting Aras-CardAccess permission: [$($actionContext.PermissionDisplayName)] - [$($actionContext.References.Permission.Reference)]: Group membership is already assigned"
             }
 
             $outputContext.Success = $true

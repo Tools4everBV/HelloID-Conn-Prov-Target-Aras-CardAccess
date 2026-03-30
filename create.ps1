@@ -110,8 +110,6 @@ try {
             $actionContext.Data | Add-Member @{
                 Facility = $actionContext.Configuration.Facility
                 Enabled  = 0
-                ActvDate = $null
-                ExprDate = (Get-Date).ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ssZ')
             }
 
             $splatCreateParams = @{

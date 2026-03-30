@@ -99,36 +99,41 @@ try {
             $agnos = [System.Collections.ArrayList]@(
                 $correlatedAccount.PSObject.Properties | Where-Object { $_.Name.StartsWith('AG') -and $_.Value -ne $actionContext.Configuration.NoAccessPermissionId } | ForEach-Object { [int]$_.Value }
             )
-            # Remove the permission from the AGNos array to update the account without the permission.
-            $agnos = $agnos | Where-Object { $_ -ne $actionContext.References.Permission.Reference }
+            if ($agnos -Contains $actionContext.References.Permission.Reference) {
+                # Remove the permission from the AGNos array to update the account without the permission.
+                $agnos = @($agnos | Where-Object { $_ -ne $actionContext.References.Permission.Reference })
 
-            # If the last permission gets revoked grant the 'no access'
-            if ($agnos.count -eq 0) {
-                $agnos = [System.Collections.ArrayList]@([int]$actionContext.Configuration.NoAccessPermissionId)
-            }
+                # If the last permission gets revoked grant the 'no access'
+                if ($agnos.count -eq 0) {
+                    $agnos = [System.Collections.ArrayList]@([int]$actionContext.Configuration.NoAccessPermissionId)
+                }
 
 
-            $body = @{
-                Badge = $actionContext.References.Account
-                AGNos = $agnos
-            }
+                $body = @{
+                    Badge = $actionContext.References.Account
+                    Enabled = [int]$correlatedAccount.Enabled
+                    AGNos = $agnos
+                }
 
-            $splatRevokeParams = @{
-                Uri     = "$($actionContext.Configuration.BaseUrl)/Badges/UpdateBadge"
-                Method  = 'POST'
-                Headers = $headers
-                Body    = ([System.Text.Encoding]::UTF8.GetBytes(($body | ConvertTo-Json)))
-            }
+                $splatRevokeParams = @{
+                    Uri     = "$($actionContext.Configuration.BaseUrl)/Badges/UpdateBadge"
+                    Method  = 'POST'
+                    Headers = $headers
+                    Body    = ([System.Text.Encoding]::UTF8.GetBytes(($body | ConvertTo-Json)))
+                }
 
-            if (-not($actionContext.DryRun -eq $true)) {
-                Write-Information "Revoking Aras-CardAccess permission: [$($actionContext.PermissionDisplayName)] - [$($actionContext.References.Permission.Reference)]"
+                if (-not($actionContext.DryRun -eq $true)) {
+                    Write-Information "Revoking Aras-CardAccess permission: [$($actionContext.PermissionDisplayName)] - [$($actionContext.References.Permission.Reference)]"
 
-                $revokedPermission = Invoke-RestMethod @splatRevokeParams
-                if ($revokedPermission.Result -ne 0) {
-                    throw $revokedPermission.message
+                    $revokedPermission = Invoke-RestMethod @splatRevokeParams
+                    if ($revokedPermission.Result -ne 0) {
+                        throw $revokedPermission.message
+                    }
+                } else {
+                    Write-Information "[DryRun] Revoke Aras-CardAccess permission: [$($actionContext.References.Permission.Reference)], will be executed during enforcement"
                 }
             } else {
-                Write-Information "[DryRun] Revoke Aras-CardAccess permission: [$($actionContext.References.Permission.Reference)], will be executed during enforcement"
+                Write-Information "Revoking Aras-CardAccess permission: [$($actionContext.PermissionDisplayName)] - [$($actionContext.References.Permission.Reference)]: Permission is not assigned"
             }
 
             $outputContext.Success = $true
