@@ -99,8 +99,6 @@ try {
             $body = @{
                 Badge    = $actionContext.References.Account
                 Enabled  = 0
-                ActvDate = (Get-Date).AddDays(-1).ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ssZ')
-                ExprDate = (Get-Date).ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ssZ')
             }
 
             $splatDisableParams = @{

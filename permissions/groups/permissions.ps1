@@ -77,11 +77,11 @@ try {
     $splatImportPermissionParams = @{
         Uri    = "$($actionContext.Configuration.BaseUrl)/Access/AccessGroups"
         Method = 'GET'
-        Header = $headers
+        Headers = $headers
     }
 
     # Retrieve permissions and filter out 'no access' permission
-    $retrievedPermissions = (Invoke-RestMethod @splatImportPermissionParams) | Where-Object { $_.ValueMember -ne $actionContext.Configuration.NoAccessPermissionId }
+    $retrievedPermissions = (Invoke-RestMethod @splatImportPermissionParams)  | Where-Object { $_.ValueMember -ne $actionContext.Configuration.NoAccessPermissionId }
 
     foreach ($permission in $retrievedPermissions) {
         $outputContext.Permissions.Add(

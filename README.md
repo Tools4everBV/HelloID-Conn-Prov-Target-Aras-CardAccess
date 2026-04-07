@@ -32,6 +32,7 @@
     - [BadgeOperation Endpoint](#badgeoperation-endpoint)
     - [Required AddBadge Fields](#required-addbadge-fields)
     - [Expiration Date Constraint](#expiration-date-constraint)
+    - [Enabled State Preservation](#enabled-state-preservation)
     - [Single Partition Support](#single-partition-support)
     - [Single Facility Configuration](#single-facility-configuration)
     - [AG Properties Limitation](#ag-properties-limitation)
@@ -89,7 +90,7 @@ The following settings are required to connect to the API.
 | Password             | The Password to connect to the API                            | Yes       |
 | BaseUrl              | The URL to the API                                            | Yes       |
 | PartitionId          | The PartitionId used to retrieve all badgeHolders             | Yes       |
-| Facility             | The Facility on which the API requests will be executed        | Yes       |
+| Facility             | The Facility on which the API requests will be executed       | Yes       |
 | NoAccessPermissionId | The Permission Id (valueMember) of the 'no access' permission | Yes       |
 
 
@@ -141,7 +142,10 @@ The account reference is populated with the `Badge` property from _Aras-CardAcce
 - **Mandatory Fields**: The Facility ID, Badge, and LastName are mandatory fields for the AddBadge API request.
 
 ### Expiration Date Constraint
-- **Date Behavior**: Expiration dates can be set to null during account creation, but once set, they cannot be changed back to null. The connector therefore always includes both activation and expiration dates in enable and disable operations.
+- **Date Behavior**: Expiration dates can be set to null during account creation, but once set, they cannot be changed back to null. To prevent unintended date updates, the connector no longer sends `ActvDate` and `ExprDate` in create, enable, and disable payloads.
+
+### Enabled State Preservation
+- **Mandatory for UpdateBadge**: The `UpdateBadge` endpoint can disable an account when `Enabled` is not included in the payload. Therefore, the connector always includes the current `Enabled` value in account update and permission grant/revoke operations.
 
 ### Single Partition Support
 - **Partition Limitation**: The connector currently supports only one partition ID for the `AllBadgeHolders` endpoint. If your configuration uses multiple partitions, the connector code must be modified to handle them appropriately.
