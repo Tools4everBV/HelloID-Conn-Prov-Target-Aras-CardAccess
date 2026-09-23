@@ -15,6 +15,7 @@ All notable changes to this project will be documented in this file. The format 
 ### Fixed
 
 - Fixed the permission group import failing with `Value was either too large or too small for an Int32` when a badge number exceeds the Int32 range.
+- Fixed the account and permission imports returning badges from other facilities. The `Facility` query parameter is not applied by `AllBadgeHolders`, so the badges are now filtered on `Facility` client side.
 - Fixed the group grant payload so the added access group is always sent as a number in `AGNos`.
 - Fixed `GrantPermission` and `RevokePermission` building `AGNos` from empty `AG#` slots. Only `AG#` properties with a value are used and duplicates are removed.
 

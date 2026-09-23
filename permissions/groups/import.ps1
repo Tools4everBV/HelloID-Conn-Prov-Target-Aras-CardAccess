@@ -75,11 +75,15 @@ try {
     }
 
     $splatGetBadges = @{
-        Uri     = "$($actionContext.Configuration.BaseUrl)/Badges/AllBadgeHolders?partitionId=$($actionContext.Configuration.PartitionId)&Facility=$($actionContext.Configuration.Facility)"
+        Uri     = "$($actionContext.Configuration.BaseUrl)/Badges/AllBadgeHolders?partitionId=$($actionContext.Configuration.PartitionId)"
         Method  = 'Get'
         Headers = $headers
     }
+    # The Facility query parameter is not applied by the API, so the accounts are filtered on Facility client side
     $importedAccounts = Invoke-RestMethod @splatGetBadges
+    Write-Information "Retrieved [$($importedAccounts.Count)] accounts from Aras-CardAccess"
+    $importedAccounts = $importedAccounts.Where({ $_.Facility -eq $actionContext.Configuration.Facility })
+    Write-Information "[$($importedAccounts.Count)] accounts remaining after filtering on Facility [$($actionContext.Configuration.Facility)]"
 
 
     $splatImportPermissionParams = @{
