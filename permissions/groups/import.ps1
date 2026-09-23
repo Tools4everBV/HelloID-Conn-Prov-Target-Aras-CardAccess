@@ -91,11 +91,12 @@ try {
 
     foreach ($importedPermission in ($importedPermissions | Where-Object { $_.ValueMember -ne $actionContext.Configuration.NoAccessPermissionId })) {
         # Get all account references where one of the AG# properties contains permission reference.
-        $badgeReferences = [System.Collections.Generic.List[int]]::new()
+        # Badge is handled as a string to support values outside the Int32 range.
+        $badgeReferences = [System.Collections.Generic.List[string]]::new()
         foreach ($account in $importedAccounts) {
-            $agValues = $account.PSObject.Properties.Where({ $_.Name -match '^AG\d+$' -and $_.Value -ne $actionContext.Configuration.NoAccessPermissionId }).Value
+            $agValues = $account.PSObject.Properties.Where({ $_.Name -match '^AG\d+$' }).Value
             if ($agValues -contains $importedPermission.ValueMember) {
-                $badgeReferences.Add($account.Badge)
+                $badgeReferences.Add("$($account.Badge)")
             }
         }
 
@@ -108,7 +109,7 @@ try {
             AccountReferences   = $null
         }
 
-        # The code below splits a list of permission members into batches of 100
+        # The code below splits a list of permission members into batches of 500
         # Each batch is assigned to $permission.AccountReferences and the permission object will be returned to HelloID for each batch
         # Ensure batching is based on the number of account references to prevent exceeding the maximum limit of 500 account references per batch
         $batchSize = 500

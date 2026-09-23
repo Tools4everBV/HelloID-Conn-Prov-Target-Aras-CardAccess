@@ -98,6 +98,7 @@ try {
 
             $body = @{
                 Badge    = $actionContext.References.Account
+                Facility = $actionContext.Configuration.Facility
                 Enabled  = 0
             }
 

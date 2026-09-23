@@ -96,15 +96,20 @@ try {
     switch ($action) {
         'GrantPermission' {
             # Build AGNos array, Get the value from all properties from correlatedAccount starting with AG and a number after.
+            # Empty AG slots and the 'no access' permission are skipped, otherwise they are sent back as access groups.
             $agnos = [System.Collections.ArrayList]@(
-                $correlatedAccount.PSObject.Properties | Where-Object { $_.Name.StartsWith('AG') -and $_.Value -ne $actionContext.Configuration.NoAccessPermissionId } | ForEach-Object { [int]$_.Value }
+                $correlatedAccount.PSObject.Properties |
+                    Where-Object { $_.Name -match '^AG\d+$' -and -not [string]::IsNullOrEmpty("$($_.Value)") -and "$($_.Value)" -ne "$($actionContext.Configuration.NoAccessPermissionId)" } |
+                    ForEach-Object { [int]$_.Value } |
+                    Select-Object -Unique
             )
             # Add the permission to the AGNos array to update the account with the new permission.
             if ($agnos -NotContains $actionContext.References.Permission.Reference) {
-                $agnos.Add($actionContext.References.Permission.Reference) | Out-Null
+                $agnos.Add([int]$actionContext.References.Permission.Reference) | Out-Null
 
                 $body = @{
                     Badge = $actionContext.References.Account
+                    Facility = $actionContext.Configuration.Facility
                     Enabled = [int]$correlatedAccount.Enabled
                     AGNos = $agnos
                 }
@@ -128,7 +133,7 @@ try {
                 }
             } else {
                 # Group membership is already assigned
-                 Write-Information "Granting Aras-CardAccess permission: [$($actionContext.PermissionDisplayName)] - [$($actionContext.References.Permission.Reference)]: Group membership is already assigned"
+                Write-Information "Granting Aras-CardAccess permission: [$($actionContext.PermissionDisplayName)] - [$($actionContext.References.Permission.Reference)]: Group membership is already assigned"
             }
 
             $outputContext.Success = $true
@@ -136,6 +141,7 @@ try {
                     Message = "Grant permission [$($actionContext.PermissionDisplayName)] was successful"
                     IsError = $false
                 })
+            break
         }
 
         'NotFound' {

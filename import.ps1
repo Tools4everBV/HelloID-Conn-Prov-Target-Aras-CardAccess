@@ -88,6 +88,10 @@ try {
         foreach ($field in $actionContext.ImportFields) {
             $data[$field] = $importedAccount.$field
         }
+        # Badge is handled as a string to match the account reference
+        if ($data.ContainsKey('Badge')) {
+            $data['Badge'] = "$($importedAccount.Badge)"
+        }
 
         # Set Enabled based on importedAccount status
         $isEnabled = $false
@@ -110,12 +114,12 @@ try {
         # Make sure the displayName has a value
         $displayName = "$($importedAccount.FirstName) $($importedAccount.LastName)".trim()
         if ([string]::IsNullOrEmpty($displayName)) {
-            $displayName = $importedAccount.badge
+            $displayName = "$($importedAccount.badge)"
         }
 
         # Return the result
         Write-Output @{
-            AccountReference = $importedAccount.badge
+            AccountReference = "$($importedAccount.badge)"
             displayName      = $displayName
             UserName         = "$($importedAccount.badge)"
             Enabled          = $isEnabled

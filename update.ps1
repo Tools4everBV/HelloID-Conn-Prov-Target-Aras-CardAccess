@@ -112,6 +112,7 @@ try {
             $body = $actionContext.Data | Select-Object -Property $propertiesChanged.Name
             $body | Add-Member -MemberType NoteProperty -Name 'Badge' -Value $actionContext.References.Account
             $body | Add-Member -MemberType NoteProperty -Name 'Enabled' -Value $([int]$correlatedAccount.Enabled)
+            $body | Add-Member -MemberType NoteProperty -Name 'Facility' -Value $($actionContext.Configuration.Facility)
 
             $splatUpdateParams = @{
                 Uri     = "$($actionContext.Configuration.BaseUrl)/Badges/UpdateBadge" 

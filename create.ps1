@@ -127,10 +127,8 @@ try {
                     throw $createdAccount.message
                 }
 
-                # Cast to int for reconciliation purposes and logging in HelloID
-                $outputContext.data.Badge = [int]$outputContext.data.Badge
-                $outputContext.Data = ($outputContext.data | Select-Object -Property $outputContext.data.PSObject.Properties.Name)
-                $outputContext.AccountReference = [int]$outputContext.data.Badge
+                # Badge is handled as a string to support values outside the Int32 range
+                $outputContext.AccountReference = "$($outputContext.data.Badge)"
             } else {
                 Write-Information '[DryRun] Create and correlate Aras-CardAccess account, will be executed during enforcement'
             }
@@ -143,7 +141,7 @@ try {
             $correlatedAccount | Add-Member -MemberType NoteProperty -Name 'FirstName' -Value $correlatedAccount.FrstName
 
             $outputContext.Data = ($correlatedAccount | Select-Object -Property $outputContext.data.PSObject.Properties.Name)
-            $outputContext.AccountReference = $correlatedAccount.Badge
+            $outputContext.AccountReference = "$($correlatedAccount.Badge)"
             $outputContext.AccountCorrelated = $true
             $auditLogMessage = "Correlated account: [$($outputContext.AccountReference)] on field: [$($correlationField)] with value: [$($correlationValue)]"
             break

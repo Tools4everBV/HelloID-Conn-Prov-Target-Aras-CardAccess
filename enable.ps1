@@ -97,6 +97,7 @@ try {
         'EnableAccount' {
             $body = @{
                 Badge    = $actionContext.References.Account
+                Facility = $actionContext.Configuration.Facility
                 Enabled  = 1
             }
 
