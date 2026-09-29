@@ -92,7 +92,7 @@ try {
 
         $splatCompareProperties = @{
             ReferenceObject  = @($correlatedAccount.PSObject.Properties)
-            DifferenceObject = @($actionContext.Data.PSObject.Properties)
+            DifferenceObject = @($actionContext.Data.PSObject.Properties | Where-Object {$_.Name -ne 'Badge'})
         }
         $propertiesChanged = Compare-Object @splatCompareProperties -PassThru | Where-Object { $_.SideIndicator -eq '=>' }
         if ($propertiesChanged) {
@@ -110,9 +110,9 @@ try {
             Write-Information "Account property(s) required to update: $($propertiesChanged.Name -join ', ')"
 
             $body = $actionContext.Data | Select-Object -Property $propertiesChanged.Name
-            $body | Add-Member -MemberType NoteProperty -Name 'Badge' -Value $actionContext.References.Account
+            $body.Badge = $actionContext.References.Account
             $body | Add-Member -MemberType NoteProperty -Name 'Enabled' -Value $([int]$correlatedAccount.Enabled)
-            $body | Add-Member -MemberType NoteProperty -Name 'Facility' -Value $($actionContext.Configuration.Facility)
+            $body | Add-Member -MemberType NoteProperty -Name 'Facility' -Value $($actionContext.Configuration.Facility)     
 
             $splatUpdateParams = @{
                 Uri     = "$($actionContext.Configuration.BaseUrl)/Badges/UpdateBadge" 

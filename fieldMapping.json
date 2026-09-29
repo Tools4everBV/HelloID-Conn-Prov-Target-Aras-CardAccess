@@ -42,11 +42,12 @@
       "MappingActions": [
         {
           "MapForActions": [
-            "Create"
+            "Create",
+            "Update"
           ],
           "MappingMode": "Field",
           "Value": "\"Person.ExternalId\"",
-          "UsedInNotifications": false,
+          "UsedInNotifications": true,
           "StoreInAccountData": false
         }
       ]
