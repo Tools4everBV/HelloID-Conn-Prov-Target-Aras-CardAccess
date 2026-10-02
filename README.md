@@ -40,6 +40,7 @@
     - [No Pagination Support](#no-pagination-support)
     - [Long audit message](#long-audit-message)
     - [Process for Granting and Receiving Physical Access Cards](#process-for-granting-and-receiving-physical-access-cards)
+    - [Conditional event for notification when Badge changes](#conditional-event-for-notification-when-badge-changes)
   - [Development resources](#development-resources)
     - [API endpoints](#api-endpoints)
   - [Getting help](#getting-help)
@@ -173,6 +174,18 @@ The account reference is populated with the `Badge` property from _Aras-CardAcce
   Persons remain in HelloID (depending on the configured retention period) for up to one month after they leave the organization. During this period, HelloID retains which badge/card number belongs to that person.
   
   If an employee leaves the organization and the physical badge is reassigned to a new employee within that month, this can result in two HelloID persons being correlated to a single badge holder.
+
+### Conditional event for notification when Badge changes
+
+A conditional event needs to be set up based on changes of the badge. On this event a notification can be configured to send an e-mail to the CardAccess-administrator.
+
+> [!TIP]
+> How to configure:
+> 1. Make sure `Badge` is added in the field mapping.
+> 2. Go to Business Custom events, create a new custom event. Select the CardAccess connector, action `Account update` and add a condition with field `Badge` is updated.
+> 3. Go to Notifications Configuration, create a new notification. Select your CardAccess custom event. Import the [_conditional-notification.mjml_](./assets/ConditionalNotification.mjml) template.
+>
+> _For more information custom events, please refer to our [documentation](https://docs.helloid.com/en/provisioning/notifications--provisioning-/custom-notification-events--conditional-notifications-.html) pages_.
 
 ## Development resources
 

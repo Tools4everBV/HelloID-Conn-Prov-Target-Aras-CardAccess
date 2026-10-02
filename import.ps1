@@ -75,12 +75,17 @@ try {
     }
 
     $splatGetBadges = @{
-        Uri     = "$($actionContext.Configuration.BaseUrl)/Badges/AllBadgeHolders?partitionId=$($actionContext.Configuration.PartitionId)&Facility=$($actionContext.Configuration.Facility)"
+        Uri     = "$($actionContext.Configuration.BaseUrl)/Badges/AllBadgeHolders?partitionId=$($actionContext.Configuration.PartitionId)"
         Method  = 'Get'
         Headers = $headers
     }
+    # The Facility query parameter is not applied by the API, so the accounts are filtered on Facility client side
     $importedAccounts = Invoke-RestMethod @splatGetBadges
+    Write-Information "Retrieved [$($importedAccounts.Count)] accounts from Aras-CardAccess"
+    $importedAccounts = $importedAccounts.Where({ $_.Facility -eq $actionContext.Configuration.Facility })
+    Write-Information "[$($importedAccounts.Count)] accounts remaining after filtering on Facility [$($actionContext.Configuration.Facility)]"
 
+    $now = Get-Date
     foreach ($importedAccount in $importedAccounts) {
         # Making sure only fieldMapping fields are imported
         $importedAccount | Add-Member -MemberType NoteProperty -Name 'FirstName' -Value $importedAccount.FrstName
@@ -88,11 +93,14 @@ try {
         foreach ($field in $actionContext.ImportFields) {
             $data[$field] = $importedAccount.$field
         }
+        # Badge is handled as a string to match the account reference
+        if ($data.ContainsKey('Badge')) {
+            $data['Badge'] = "$($importedAccount.Badge)"
+        }
 
         # Set Enabled based on importedAccount status
         $isEnabled = $false
         if ($importedAccount.Enabled -eq $true) {
-            $now = Get-Date
             $activeDate = $null
             if ($null -ne $importedAccount.actvDate) {
                 $activeDate = Get-Date $importedAccount.actvDate
@@ -110,12 +118,12 @@ try {
         # Make sure the displayName has a value
         $displayName = "$($importedAccount.FirstName) $($importedAccount.LastName)".trim()
         if ([string]::IsNullOrEmpty($displayName)) {
-            $displayName = $importedAccount.badge
+            $displayName = "$($importedAccount.badge)"
         }
 
         # Return the result
         Write-Output @{
-            AccountReference = $importedAccount.badge
+            AccountReference = "$($importedAccount.badge)"
             displayName      = $displayName
             UserName         = "$($importedAccount.badge)"
             Enabled          = $isEnabled

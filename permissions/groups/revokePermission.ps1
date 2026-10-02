@@ -96,8 +96,12 @@ try {
     switch ($action) {
         'RevokePermission' {
             # Build AGNos array, Get the value from all properties from correlatedAccount starting with AG and a number after.
+            # Empty AG slots and the 'no access' permission are skipped, otherwise they are sent back as access groups.
             $agnos = [System.Collections.ArrayList]@(
-                $correlatedAccount.PSObject.Properties | Where-Object { $_.Name.StartsWith('AG') -and $_.Value -ne $actionContext.Configuration.NoAccessPermissionId } | ForEach-Object { [int]$_.Value }
+                $correlatedAccount.PSObject.Properties |
+                    Where-Object { $_.Name -match '^AG\d+$' -and -not [string]::IsNullOrEmpty("$($_.Value)") -and "$($_.Value)" -ne "$($actionContext.Configuration.NoAccessPermissionId)" } |
+                    ForEach-Object { [int]$_.Value } |
+                    Select-Object -Unique
             )
             if ($agnos -Contains $actionContext.References.Permission.Reference) {
                 # Remove the permission from the AGNos array to update the account without the permission.
@@ -111,6 +115,7 @@ try {
 
                 $body = @{
                     Badge = $actionContext.References.Account
+                    Facility = $actionContext.Configuration.Facility
                     Enabled = [int]$correlatedAccount.Enabled
                     AGNos = $agnos
                 }
@@ -141,6 +146,7 @@ try {
                     Message = "Revoke permission [$($actionContext.PermissionDisplayName)] from [$($actionContext.References.Account)] was successful. Action initiated by: [$($actionContext.Origin)]"
                     IsError = $false
                 })
+            break
         }
 
         'NotFound' {

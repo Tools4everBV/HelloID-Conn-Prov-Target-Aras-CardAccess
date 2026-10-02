@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](https://keepachangelog.com), and this project adheres to [Semantic Versioning](https://semver.org).
 
+## [2.0.0] - 23-09-2026
+
+> [!IMPORTANT]
+> The account reference changed from a number to a string. Existing implementations must verify their stored account references before upgrading.
+
+### Changed
+
+- Changed the account reference (`Badge`) to a string in `Create` and in the account and permission imports. This supports badge numbers outside the Int32 range.
+- Added `Facility` to the `UpdateBadge` payloads in `Update`, `Enable`, `Disable`, `GrantPermission` and `RevokePermission`. Access groups are generic across facilities, so the `AccessGroups` calls are not filtered on `Facility`.
+
+### Fixed
+
+- Fixed the permission group import failing with `Value was either too large or too small for an Int32` when a badge number exceeds the Int32 range.
+- Fixed the account and permission imports returning badges from other facilities. The `Facility` query parameter is not applied by `AllBadgeHolders`, so the badges are now filtered on `Facility` client side.
+- Fixed the group grant payload so the added access group is always sent as a number in `AGNos`.
+- Fixed `GrantPermission` and `RevokePermission` building `AGNos` from empty `AG#` slots. Only `AG#` properties with a value are used and duplicates are removed.
+
 ## [1.0.1] - 30-03-2026
 
 ### Changed
